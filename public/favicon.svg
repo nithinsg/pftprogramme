@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Yashoda Hospitals Somajiguda Pulmonology">
+  <!-- LOGO SLOT: replace with the official Yashoda mark when supplied. -->
+  <rect width="64" height="64" rx="14" fill="#0A1A2F"/>
+  <rect x="12" y="12" width="40" height="40" rx="9" fill="none" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="2"/>
+  <text x="32" y="36" text-anchor="middle" dominant-baseline="middle"
+        font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="17" font-weight="600" letter-spacing="-0.5" fill="#FFFFFF">YH</text>
+  <rect x="26" y="41" width="12" height="2" rx="1" fill="#D9924B"/>
+</svg>

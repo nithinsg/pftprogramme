@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Internal production pages — working documents for the team, not for delegates.
+Disallow: /event-screen
+Disallow: /recording-spec
+
+# Update the host below to the live origin before go-live.
+Sitemap: https://pulmomentor.example.org/sitemap.xml

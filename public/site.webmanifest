@@ -1,0 +1,15 @@
+{
+  "name": "Pulmo Mentor BFD | Yashoda Hospitals – Somajiguda",
+  "short_name": "Pulmo Mentor BFD",
+  "description": "Recorded sessions from the Pulmo Mentor BFD Workshop and the advanced pulmonary capabilities of Yashoda Hospitals, Somajiguda.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0A1A2F",
+  "theme_color": "#0A1A2F",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/media/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

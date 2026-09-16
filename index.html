@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A1A2F" />
+
+    <!-- ── Core SEO ─────────────────────────────────────────────────────── -->
+    <title>Pulmo Mentor BFD | Yashoda Hospitals – Somajiguda</title>
+    <meta
+      name="description"
+      content="Recorded sessions from the Pulmo Mentor BFD Workshop, alongside the advanced pulmonary capabilities of the Department of Pulmonology at Yashoda Hospitals, Somajiguda — ECMO, advanced interventions and lung transplantation."
+    />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- ── Open Graph / WhatsApp link preview ───────────────────────────── -->
+    <!-- The post-event link is shared over WhatsApp. These tags are static in
+         the HTML shell (crawlers do not run JS) so the preview always renders,
+         and are then kept in sync per-route by src/lib/seo.ts for in-app nav. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Yashoda Hospitals – Somajiguda Pulmonology" />
+    <meta property="og:title" content="Pulmo Mentor BFD | Yashoda Hospitals – Somajiguda" />
+    <meta
+      property="og:description"
+      content="Knowledge. Expertise. Advanced Pulmonary Care. Access the recorded sessions from the Pulmo Mentor BFD Workshop."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/media/og-pulmo-mentor-bfd.png" />
+    <meta property="og:image:secure_url" content="%VITE_SITE_URL%/media/og-pulmo-mentor-bfd.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Pulmo Mentor BFD Workshop — Yashoda Hospitals, Somajiguda, Department of Pulmonology"
+    />
+    <meta property="og:locale" content="en_IN" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pulmo Mentor BFD | Yashoda Hospitals – Somajiguda" />
+    <meta
+      name="twitter:description"
+      content="Knowledge. Expertise. Advanced Pulmonary Care. Access the recorded sessions from the Pulmo Mentor BFD Workshop."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/media/og-pulmo-mentor-bfd.png" />
+
+    <!-- ── Icons ────────────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/media/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- ── Typography ───────────────────────────────────────────────────── -->
+    <!-- Inter is self-hosted rather than loaded from Google Fonts: it removes a
+         third-party DNS + TLS round trip on a mobile connection, keeps a
+         clinical audience's requests off a third party, and means the site
+         renders identically on a hospital network that blocks external CDNs.
+         @font-face lives in src/index.css; this preload starts the fetch in
+         parallel with the stylesheet. -->
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- ── Structured data ──────────────────────────────────────────────── -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "MedicalOrganization",
+        "name": "Yashoda Hospitals — Somajiguda",
+        "department": {
+          "@type": "MedicalOrganization",
+          "name": "Department of Pulmonology",
+          "medicalSpecialty": "Pulmonary"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Somajiguda, Hyderabad",
+          "addressRegion": "Telangana",
+          "addressCountry": "IN"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 40rem; margin: 0 auto">
+        <h1 style="color: #0a1a2f">Pulmo Mentor BFD Workshop</h1>
+        <p style="color: #16324f; line-height: 1.6">
+          Yashoda Hospitals, Somajiguda — Department of Pulmonology. Please enable JavaScript to view
+          the workshop recordings and the pulmonology capability showcase.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

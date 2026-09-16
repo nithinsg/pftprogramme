@@ -1,0 +1,4 @@
+# SPA fallback for Netlify. Every route is served by index.html and resolved
+# client-side by React Router — without this, a deep link such as
+# /recordings/opening-address 404s on a hard refresh or a shared link.
+/*  /index.html  200

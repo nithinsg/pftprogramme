@@ -12,7 +12,8 @@
       content="Recorded sessions from the Pulmo Mentor BFD Workshop, alongside the advanced pulmonary capabilities of the Department of Pulmonology at Yashoda Hospitals, Somajiguda — ECMO, advanced interventions and lung transplantation."
     />
     <link rel="canonical" href="%VITE_SITE_URL%/" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <!-- %VITE_ROBOTS% is "noindex" on staging, "index" at go-live. See .env. -->
+    <meta name="robots" content="%VITE_ROBOTS%, follow, max-image-preview:large" />
 
     <!-- ── Open Graph / WhatsApp link preview ───────────────────────────── -->
     <!-- The post-event link is shared over WhatsApp. These tags are static in

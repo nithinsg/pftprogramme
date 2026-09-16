@@ -10,7 +10,7 @@ import { talks } from './src/data/talks';
  * same `src/data/talks.ts` the site renders from — so a recording added to the
  * library is in the sitemap on the next deploy with no second edit.
  */
-function seoFiles(siteUrl: string): Plugin {
+function seoFiles(siteUrl: string, indexable: boolean): Plugin {
   return {
     name: 'pulmo-seo-files',
     apply: 'build',
@@ -47,7 +47,10 @@ ${routes
 </urlset>
 `;
 
-      const robots = `User-agent: *
+      // A staging deployment carries a real hospital's name next to placeholder
+      // content. It is disallowed wholesale until VITE_ROBOTS=index at go-live.
+      const robots = indexable
+        ? `User-agent: *
 Allow: /
 
 # Internal production pages — working documents for the team, not for delegates.
@@ -55,12 +58,19 @@ Disallow: /event-screen
 Disallow: /recording-spec
 
 Sitemap: ${origin}/sitemap.xml
+`
+        : `# Staging / review deployment — not for indexing.
+User-agent: *
+Disallow: /
 `;
 
       const out = path.resolve(__dirname, 'dist');
       writeFileSync(path.join(out, 'sitemap.xml'), sitemap);
       writeFileSync(path.join(out, 'robots.txt'), robots);
-      console.log(`\n  sitemap.xml  ${routes.length} URLs at ${origin}`);
+      console.log(
+        `\n  sitemap.xml  ${routes.length} URLs at ${origin}` +
+          (indexable ? '' : '  ·  robots.txt: Disallow / (staging, not indexable)'),
+      );
     },
   };
 }
@@ -68,9 +78,10 @@ Sitemap: ${origin}/sitemap.xml
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
   const siteUrl = env.VITE_SITE_URL || 'https://pulmomentor.example.org';
+  const indexable = env.VITE_ROBOTS === 'index';
 
   return {
-    plugins: [react(), seoFiles(siteUrl)],
+    plugins: [react(), seoFiles(siteUrl, indexable)],
     resolve: {
       alias: { '@': path.resolve(__dirname, './src') },
     },

@@ -11,6 +11,12 @@ export const config = {
    * does not render, satisfying the brief's medical-content rules.
    */
   showPlaceholders: bool(import.meta.env.VITE_SHOW_PLACEHOLDERS, true),
+  /**
+   * 'noindex' on every staging/review deployment. The site carries a real
+   * hospital's name next to placeholder content; it must not be indexed as the
+   * hospital's own site until it goes live with approved content.
+   */
+  indexable: (import.meta.env.VITE_ROBOTS ?? 'noindex') === 'index',
   gaMeasurementId: import.meta.env.VITE_GA_MEASUREMENT_ID ?? '',
   analyticsDebug: bool(import.meta.env.VITE_ANALYTICS_DEBUG, false),
   isProd: import.meta.env.PROD,

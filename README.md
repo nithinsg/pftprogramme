@@ -166,6 +166,8 @@ and the live talk data, so they cannot drift.
 
 - [ ] Set `VITE_SITE_URL` to the real origin
 - [ ] Set `VITE_SHOW_PLACEHOLDERS=false`
+- [ ] Set `VITE_ROBOTS=index` — it is `noindex` on every staging deployment so a
+      page carrying the hospital's name is never indexed with placeholder content
 - [ ] Set `VITE_GA_MEASUREMENT_ID` (or wire `window.dataLayer` to your own tag manager)
 - [ ] Replace faculty, session, capability and showcase content; set each `status` to `approved`
 - [ ] Add the official logo and re-run `npm run og`

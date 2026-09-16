@@ -65,7 +65,12 @@ export function useSeo({
     document.title = fullTitle;
 
     setMeta('meta[name="description"]', 'name', 'description', description);
-    setMeta('meta[name="robots"]', 'name', 'robots', noIndex ? 'noindex, follow' : 'index, follow, max-image-preview:large');
+    setMeta(
+      'meta[name="robots"]',
+      'name',
+      'robots',
+      noIndex || !config.indexable ? 'noindex, follow' : 'index, follow, max-image-preview:large',
+    );
 
     setMeta('meta[property="og:title"]', 'property', 'og:title', fullTitle);
     setMeta('meta[property="og:description"]', 'property', 'og:description', description);

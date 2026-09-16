@@ -2,21 +2,19 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { site } from '@/data/site';
+import { event, site } from '@/data/site';
 
-/** Masthead for inner pages. Navy field so the brand carries through the site. */
+/** Masthead for the two internal production pages. */
 export function PageHeader({
   eyebrow,
   title,
   lede,
-  children,
   back,
   className,
 }: {
   eyebrow: string;
   title: ReactNode;
   lede?: ReactNode;
-  children?: ReactNode;
   back?: { to: string; label: string };
   className?: string;
 }) {
@@ -44,14 +42,11 @@ export function PageHeader({
         </p>
 
         <h1 className="mt-6 max-w-4xl text-display font-semibold text-white">{title}</h1>
-
         {lede && <p className="mt-6 max-w-2xl text-lede text-ink-200">{lede}</p>}
-
-        {children}
 
         <p className="mt-10 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-white/35">
           {site.hospital} <span aria-hidden="true">·</span> {site.centre}{' '}
-          <span aria-hidden="true">·</span> {site.department}
+          <span aria-hidden="true">·</span> {event.name}
         </p>
       </div>
     </header>

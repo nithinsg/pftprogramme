@@ -1,40 +1,36 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { primaryCta, primaryNav, site } from '@/data/site';
 import { track } from '@/lib/analytics';
 import { cn } from '@/lib/cn';
 import { useLockBodyScroll, useScrolledPast } from '@/lib/hooks';
-import { Button } from '@/components/ui/Button';
 import { Logo } from './Logo';
 
 /**
- * Site header (§18).
+ * Header for a single-page site: every link is an in-page anchor.
  *
- * On the home page it starts transparent over the navy hero and resolves to a
- * solid white bar on scroll. Everywhere else it is solid from the start.
- * Navigation stays to six items — the brief asks for extremely simple, and a
- * clinician on a phone should reach the recordings in one tap.
+ * Transparent over the navy hero, resolving to a solid bar on scroll. Five
+ * links and one CTA — the brief asks for minimal, and a clinician on a phone
+ * should reach the recordings in one tap.
  */
-export function Navbar({ transparentOnTop = false }: { transparentOnTop?: boolean }) {
+export function Navbar() {
   const [open, setOpen] = useState(false);
   const scrolled = useScrolledPast(32);
-  const location = useLocation();
-
-  const solid = scrolled || !transparentOnTop || open;
+  const solid = scrolled || open;
 
   useLockBodyScroll(open);
 
-  // Close the drawer on navigation.
-  useEffect(() => setOpen(false), [location.pathname]);
-
-  // Close on Escape.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
+
+  const go = (anchor: string) => {
+    setOpen(false);
+    track({ name: 'nav_click', anchor });
+  };
 
   return (
     <header
@@ -48,40 +44,38 @@ export function Navbar({ transparentOnTop = false }: { transparentOnTop?: boolea
       <div className="container-x flex h-[var(--nav-h)] items-center justify-between gap-3 sm:gap-6">
         <Logo tone={solid ? 'dark' : 'light'} />
 
-        {/* Desktop navigation */}
         <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
           {primaryNav.map((item) => (
-            <NavLink
-              key={item.href}
-              to={item.href}
-              className={({ isActive }) =>
-                cn(
-                  'rounded-md px-3 py-2 text-[0.8125rem] font-medium transition-colors duration-250',
-                  solid
-                    ? isActive
-                      ? 'text-ink-900'
-                      : 'text-ink-600 hover:text-ink-900'
-                    : isActive
-                      ? 'text-white'
-                      : 'text-ink-200 hover:text-white',
-                )
-              }
+            <a
+              key={item.anchor}
+              href={`#${item.anchor}`}
+              onClick={() => go(item.anchor)}
+              className={cn(
+                'rounded-md px-3 py-2 text-[0.8125rem] font-medium transition-colors duration-250',
+                solid ? 'text-ink-600 hover:text-ink-900' : 'text-ink-200 hover:text-white',
+              )}
             >
               {item.label}
-            </NavLink>
+            </a>
           ))}
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <Button
-            to={primaryCta.href}
-            variant={solid ? 'primary' : 'onDark'}
-            size="sm"
-            className="hidden sm:inline-flex"
-            onClick={() => track({ name: 'view_recorded_talks_click', location: 'navbar' })}
+          <a
+            href={`#${primaryCta.anchor}`}
+            onClick={() => {
+              go(primaryCta.anchor);
+              track({ name: 'watch_sessions_click', location: 'navbar' });
+            }}
+            className={cn(
+              'hidden h-11 items-center rounded-pill px-5 text-[0.8125rem] font-semibold tracking-wide transition-colors sm:inline-flex',
+              solid
+                ? 'bg-ink-900 text-white hover:bg-ink-800'
+                : 'bg-white text-ink-900 hover:bg-mist-100',
+            )}
           >
-            View Talks
-          </Button>
+            {primaryCta.shortLabel}
+          </a>
 
           <button
             type="button"
@@ -102,40 +96,35 @@ export function Navbar({ transparentOnTop = false }: { transparentOnTop?: boolea
         </div>
       </div>
 
-      {/* Mobile drawer */}
-      <div
-        id="mobile-nav"
-        hidden={!open}
-        className="border-t border-line bg-white lg:hidden"
-      >
+      <div id="mobile-nav" hidden={!open} className="border-t border-line bg-white lg:hidden">
         <nav aria-label="Primary mobile" className="container-x animate-slide-down py-4">
           <ul className="divide-y divide-line">
             {primaryNav.map((item) => (
-              <li key={item.href}>
-                <Link
-                  to={item.href}
+              <li key={item.anchor}>
+                <a
+                  href={`#${item.anchor}`}
+                  onClick={() => go(item.anchor)}
                   className="flex items-center justify-between py-4 text-base font-medium text-ink-800"
                 >
                   {item.label}
                   <span aria-hidden="true" className="text-ink-300">
                     →
                   </span>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
 
-          <Button
-            to={primaryCta.href}
-            variant="primary"
-            size="md"
-            fullWidth
-            withArrow
-            className="mt-5"
-            onClick={() => track({ name: 'view_recorded_talks_click', location: 'mobile-nav' })}
+          <a
+            href={`#${primaryCta.anchor}`}
+            onClick={() => {
+              go(primaryCta.anchor);
+              track({ name: 'watch_sessions_click', location: 'mobile-nav' });
+            }}
+            className="mt-5 flex min-h-[3rem] w-full items-center justify-center gap-2 rounded-pill bg-ink-900 px-6 text-sm font-semibold tracking-wide text-white"
           >
             {primaryCta.label}
-          </Button>
+          </a>
 
           <p className="mt-5 pb-2 text-meta text-ink-400">
             {site.hospital} · {site.centre} · {site.department}

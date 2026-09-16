@@ -1,51 +1,53 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { LayoutTemplate, Layers, Play, ShieldAlert, UserSquare2, VideoOff } from 'lucide-react';
+import { LayoutTemplate, Layers, Play, UserSquare2, VideoOff } from 'lucide-react';
 import type { VideoSource } from '@/data/types';
+import { YOUTUBE_ID_PLACEHOLDER, isPlayable } from '@/data/types';
 import { createProgressTracker } from '@/lib/analytics';
 import { cn } from '@/lib/cn';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * VIDEO PLAYER (§10, §11, §25)
+ * VIDEO PLAYER
  * ─────────────────────────────────────────────────────────────────────────────
  * THE REQUIREMENT: the presentation and the speaker must both stay visible, and
  * the slides must stay legible on a phone.
  *
- * TWO WAYS THAT IS SATISFIED:
+ * 1. COMPOSITE MASTER — the intended deliverable. Post-production hands over
+ *    ONE file: presentation full-frame with the speaker keyed into the corner.
+ *    The player is then a plain single-video player and the framing is already
+ *    right on every device.
  *
- * 1. COMPOSITE MASTER (the intended deliverable — see docs/RECORDING-SPEC.md).
- *    Post-production hands over ONE file: the presentation feed full-frame with
- *    the speaker keyed into the lower-right corner. The player is then a plain
- *    single-video player and the framing is already correct on every device.
+ * 2. DUAL FEED — fallback. If the two sources arrive separately, set
+ *    `speakerUrl` and the player composites them live: slides full-frame,
+ *    speaker inset, playback clock-locked to the slide feed and drift-
+ *    corrected. Viewers can move the speaker out of the way or swap which feed
+ *    is large — on a 360px phone, the reader decides what gets the pixels.
  *
- * 2. DUAL FEED (fallback). If the two sources arrive separately, set
- *    `source.speakerUrl` and the player composites them live: slides full-frame,
- *    speaker as an inset, playback clock-locked to the slide feed and drift-
- *    corrected. Viewers can move the speaker out of the way, or swap which feed
- *    is large — because on a 360px-wide phone, the reader decides what matters.
+ * LAZY: nothing is fetched until the visitor presses play. Until then this is a
+ * poster and a button, so the page stays light with a dozen recordings on it.
  *
- * LAZY LOADING: nothing is fetched until the visitor presses play. Until then
- * this is a poster image and a button. That keeps the library page light even
- * with a dozen sessions on it.
+ * NEVER AUTOPLAYS WITH SOUND: playback only ever starts from a user gesture.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+/**
+ * `flex-none` is load-bearing, not decoration. The player is dropped into flex
+ * columns (the modal, the showcase card). As a default flex item its main size
+ * resolves from content, which for an empty aspect-ratio box is zero — and the
+ * whole player silently collapses to a 0px-high strip. `flex: none` keeps the
+ * box sizing its own height, so `aspect-video` applies.
+ */
+const PLAYER_ROOT = 'relative w-full flex-none';
+
 export interface VideoPlayerProps {
   source: VideoSource;
-  /** Used for the accessible name of the player and the iframe title. */
   title: string;
-  /** Branded thumbnail rendered as the facade before playback starts. */
+  /** Branded poster rendered as the facade before playback starts. */
   poster: ReactNode;
   analyticsId: string;
-  analyticsTitle: string;
-  /**
-   * Set when the clip must not play — e.g. patient consent is not yet recorded.
-   * The player refuses to mount any source and explains why instead.
-   */
-  blockedReason?: string;
-  /** Fired once, when the visitor activates the facade and the source mounts. */
-  onActivate?: () => void;
+  /** Mount the player immediately — used inside the modal, opened by a tap. */
+  autoStart?: boolean;
   className?: string;
 }
 
@@ -54,63 +56,38 @@ export function VideoPlayer({
   title,
   poster,
   analyticsId,
-  analyticsTitle,
-  blockedReason,
-  onActivate,
+  autoStart = false,
   className,
 }: VideoPlayerProps) {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(autoStart);
 
-  if (blockedReason) {
-    return <PlayerNotice icon={<ShieldAlert />} heading="Not yet cleared for publication" body={blockedReason} className={className} />;
-  }
-
-  if (source.provider === 'pending') {
+  if (!isPlayable(source)) {
+    const awaitingOfficialId = source.youtubeId === YOUTUBE_ID_PLACEHOLDER;
     return (
       <PlayerNotice
-        icon={<VideoOff />}
-        heading="Recording in post-production"
-        body="This session will appear here once the composite presentation-and-speaker master has been delivered and approved."
+        heading={awaitingOfficialId ? 'Official video to be linked' : 'Recording in post-production'}
+        body={
+          awaitingOfficialId
+            ? 'This card is reserved for an official Yashoda Hospitals video. The video ID has not been added yet — no other source will be substituted.'
+            : 'This session will appear here once the composite presentation-and-speaker master has been delivered and approved.'
+        }
         className={className}
       />
     );
   }
 
-  const isDual = Boolean(source.speakerUrl) && source.provider === 'file';
+  const isDual = Boolean(source.speakerUrl && source.videoUrl);
 
   return (
-    <div
-      className={cn(
-        'relative overflow-hidden rounded-card bg-ink-950 shadow-lift',
-        source.aspect === '9:16' ? 'aspect-[9/16] mx-auto max-w-sm' : 'aspect-video',
-        className,
-      )}
-    >
+    <div className={cn(PLAYER_ROOT, 'aspect-video overflow-hidden bg-ink-950', className)}>
       {!active ? (
-        <PlayerFacade
-          title={title}
-          poster={poster}
-          onActivate={() => {
-            setActive(true);
-            onActivate?.();
-          }}
-        />
+        <PlayerFacade title={title} poster={poster} onActivate={() => setActive(true)} />
       ) : isDual ? (
-        <DualFeedPlayer
-          source={source}
-          title={title}
-          analyticsId={analyticsId}
-          analyticsTitle={analyticsTitle}
-        />
-      ) : source.provider === 'file' ? (
-        <SingleFilePlayer
-          source={source}
-          title={title}
-          analyticsId={analyticsId}
-          analyticsTitle={analyticsTitle}
-        />
+        <DualFeedPlayer source={source} title={title} analyticsId={analyticsId} />
+      ) : source.videoUrl ? (
+        <SingleFilePlayer source={source} title={title} analyticsId={analyticsId} />
       ) : (
-        <EmbedPlayer source={source} title={title} />
+        <YouTubeEmbed source={source} title={title} />
       )}
     </div>
   );
@@ -155,32 +132,25 @@ function SingleFilePlayer({
   source,
   title,
   analyticsId,
-  analyticsTitle,
 }: {
   source: VideoSource;
   title: string;
   analyticsId: string;
-  analyticsTitle: string;
 }) {
-  const ref = useRef<HTMLVideoElement>(null);
-  const tracker = useRef(createProgressTracker(analyticsId, analyticsTitle));
+  const tracker = useRef(createProgressTracker(analyticsId, title));
 
   return (
     <video
-      ref={ref}
       className="absolute inset-0 h-full w-full bg-ink-950"
-      src={source.url}
-      poster={source.poster}
+      src={source.videoUrl}
+      poster={source.thumbnail}
       controls
       autoPlay
       playsInline
       preload="metadata"
       aria-label={title}
       onPlay={() => tracker.current.play()}
-      onTimeUpdate={(e) => {
-        const el = e.currentTarget;
-        tracker.current.timeUpdate(el.currentTime, el.duration);
-      }}
+      onTimeUpdate={(e) => tracker.current.timeUpdate(e.currentTarget.currentTime, e.currentTarget.duration)}
       onEnded={() => tracker.current.complete()}
     >
       {source.captionsUrl && (
@@ -199,16 +169,14 @@ function DualFeedPlayer({
   source,
   title,
   analyticsId,
-  analyticsTitle,
 }: {
   source: VideoSource;
   title: string;
   analyticsId: string;
-  analyticsTitle: string;
 }) {
   const mainRef = useRef<HTMLVideoElement>(null);
   const insetRef = useRef<HTMLVideoElement>(null);
-  const tracker = useRef(createProgressTracker(analyticsId, analyticsTitle));
+  const tracker = useRef(createProgressTracker(analyticsId, title));
 
   const [showInset, setShowInset] = useState(true);
   const [swapped, setSwapped] = useState(false);
@@ -228,15 +196,13 @@ function DualFeedPlayer({
   }, []);
 
   useEffect(() => {
-    // A low-frequency correction loop is enough: `timeupdate` alone drifts on
-    // seek, and rAF would burn battery on a phone for no visible gain.
+    // A one-second correction loop is enough: `timeupdate` alone drifts on seek,
+    // and rAF would burn battery on a phone for no visible gain.
     const interval = window.setInterval(() => sync(), 1000);
     return () => window.clearInterval(interval);
   }, [sync]);
 
-  // The slide feed is always the audio master and the timing master, whichever
-  // of the two is currently displayed large.
-  const slidesUrl = source.url;
+  const slidesUrl = source.videoUrl;
   const speakerUrl = source.speakerUrl;
 
   return (
@@ -245,7 +211,7 @@ function DualFeedPlayer({
         ref={mainRef}
         className="absolute inset-0 h-full w-full bg-ink-950 object-contain"
         src={swapped ? speakerUrl : slidesUrl}
-        poster={source.poster}
+        poster={source.thumbnail}
         controls
         autoPlay
         playsInline
@@ -258,10 +224,7 @@ function DualFeedPlayer({
         onPause={() => sync()}
         onSeeked={() => sync(true)}
         onRateChange={() => sync()}
-        onTimeUpdate={(e) => {
-          const el = e.currentTarget;
-          tracker.current.timeUpdate(el.currentTime, el.duration);
-        }}
+        onTimeUpdate={(e) => tracker.current.timeUpdate(e.currentTarget.currentTime, e.currentTarget.duration)}
         onEnded={() => tracker.current.complete()}
       >
         {source.captionsUrl && (
@@ -285,16 +248,15 @@ function DualFeedPlayer({
         aria-hidden="true"
       />
 
-      {/* Reader controls — the phone viewer decides what gets the pixels. */}
       <div className="absolute right-3 top-3 flex gap-2 sm:right-5 sm:top-5">
         <FeedButton
-          onClick={() => setSwapped((s) => !s)}
+          onClick={() => setSwapped((v) => !v)}
           label={swapped ? 'Show presentation full size' : 'Show speaker full size'}
         >
           <Layers className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
         </FeedButton>
         <FeedButton
-          onClick={() => setShowInset((s) => !s)}
+          onClick={() => setShowInset((v) => !v)}
           label={showInset ? 'Hide the inset feed' : 'Show the inset feed'}
           pressed={showInset}
         >
@@ -330,15 +292,14 @@ function FeedButton({
   );
 }
 
-/* ── YouTube / Vimeo embed ──────────────────────────────────────────────── */
+/* ── Official Yashoda YouTube embed ─────────────────────────────────────── */
 
-function EmbedPlayer({ source, title }: { source: VideoSource; title: string }) {
-  // youtube-nocookie keeps the visitor out of ad-personalisation cookies —
-  // appropriate for a clinical audience, and one less consent banner to build.
+function YouTubeEmbed({ source, title }: { source: VideoSource; title: string }) {
+  // youtube-nocookie keeps a clinical audience out of ad-personalisation
+  // cookies, and is one less consent banner to build.
   const src =
-    source.provider === 'youtube'
-      ? `https://www.youtube-nocookie.com/embed/${source.id}?autoplay=1&rel=0&modestbranding=1&playsinline=1&cc_load_policy=1`
-      : `https://player.vimeo.com/video/${source.id}?autoplay=1&dnt=1&title=0&byline=0&portrait=0&texttrack=en`;
+    `https://www.youtube-nocookie.com/embed/${source.youtubeId}` +
+    '?autoplay=1&rel=0&modestbranding=1&playsinline=1&cc_load_policy=1';
 
   return (
     <iframe
@@ -353,15 +314,13 @@ function EmbedPlayer({ source, title }: { source: VideoSource; title: string }) 
   );
 }
 
-/* ── Empty / blocked states ─────────────────────────────────────────────── */
+/* ── Empty state ────────────────────────────────────────────────────────── */
 
 function PlayerNotice({
-  icon,
   heading,
   body,
   className,
 }: {
-  icon: ReactNode;
   heading: string;
   body: string;
   className?: string;
@@ -369,13 +328,14 @@ function PlayerNotice({
   return (
     <div
       className={cn(
-        'field-navy field-grid relative grid aspect-video place-items-center overflow-hidden rounded-card',
+        PLAYER_ROOT,
+        'field-navy field-grid grid aspect-video place-items-center overflow-hidden',
         className,
       )}
     >
       <div className="relative max-w-md px-6 text-center">
-        <span className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-white/10 text-white/70 [&>svg]:h-5 [&>svg]:w-5">
-          {icon}
+        <span className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-white/10 text-white/70">
+          <VideoOff className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
         </span>
         <p className="text-base font-semibold text-white">{heading}</p>
         <p className="mt-2 text-sm leading-relaxed text-ink-200">{body}</p>
@@ -386,7 +346,7 @@ function PlayerNotice({
 
 /** Badge stating how a master is framed, shown beside the player. */
 export function LayoutBadge({ layout }: { layout?: VideoSource['layout'] }) {
-  if (layout !== 'composite-ppt-speaker') return null;
+  if (layout !== 'presentation-and-speaker') return null;
 
   return (
     <span className="inline-flex items-center gap-1.5 rounded-pill border border-line bg-mist-100 px-3 py-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-ink-600">

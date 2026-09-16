@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * DESIGN TOKENS — Pulmo Mentor BFD / Yashoda Hospitals, Somajiguda Pulmonology
+ * DESIGN TOKENS — Yashoda Hospitals, Somajiguda Pulmonology
  * ─────────────────────────────────────────────────────────────────────────────
  * BRAND NOTE (for the marketing team):
  * These values are a restrained, WCAG-checked *placeholder* palette built in the

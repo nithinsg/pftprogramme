@@ -215,19 +215,19 @@ try {
   );
   const ogHtmlPath = path.join(work, 'og.html');
   writeFileSync(ogHtmlPath, ogHtml);
-  shoot(ogHtmlPath, path.join(outDir, 'og-pulmo-mentor-bfd.png'), 1200, 630, 1);
+  shoot(ogHtmlPath, path.join(outDir, 'og-pulmo-mentor-pft.png'), 1200, 630, 1);
 
   console.log('→ rendering the touch icon (180×180 @2x)…');
   const iconHtmlPath = path.join(work, 'icon.html');
   writeFileSync(iconHtmlPath, ICON_TEMPLATE(fonts));
   shoot(iconHtmlPath, path.join(outDir, 'apple-touch-icon.png'), 180, 180, 2);
 
-  assertSize('og-pulmo-mentor-bfd.png', 1200, 630);
+  assertSize('og-pulmo-mentor-pft.png', 1200, 630);
   assertSize('apple-touch-icon.png', 360, 360);
 
   const kb = (f) => (statSync(path.join(outDir, f)).size / 1024).toFixed(0);
   console.log(
-    `\n✓ og-pulmo-mentor-bfd.png (${kb('og-pulmo-mentor-bfd.png')} KB) · apple-touch-icon.png (${kb('apple-touch-icon.png')} KB)`,
+    `\n✓ og-pulmo-mentor-pft.png (${kb('og-pulmo-mentor-pft.png')} KB) · apple-touch-icon.png (${kb('apple-touch-icon.png')} KB)`,
   );
   console.log('  WhatsApp caches previews aggressively — bump the ?v= query in index.html');
   console.log('  if you re-render this after the link has already been shared.');

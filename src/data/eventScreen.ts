@@ -2,37 +2,33 @@ import type { EventScreenSlot } from './types';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * EVENT-DAY VERTICAL SCREEN LOOP (§12–§14)
+ * EVENT-DAY VERTICAL SCREEN LOOP
  * ─────────────────────────────────────────────────────────────────────────────
- * This is NOT the workshop recording. It is a silent 9:16 capability reel that
- * loops continuously on the vertical screen at the venue, read by delegates
- * walking past at two to three metres.
+ * A silent 9:16 capability reel for the screen at the venue on 20 September.
+ * It is NOT part of the post-event website — a separate creative deliverable,
+ * specified here so it can be approved before the day.
  *
- * DESIGN CONSTRAINTS, ENFORCED BY THE PREVIEW ON /event-screen:
- *   · 1080 × 1920, 9:16, 25 or 30 fps                    · must read with NO audio
- *   · one idea per slot, 1–4 words of headline           · seamless loop, no hard cut to black
- *   · type no smaller than 48px at 1080 wide             · total loop 60–75 s
+ * The test it has to pass: a doctor walking past at two to three metres
+ * understands the message within five to ten seconds, with no audio.
  *
- * SWAPPING CONTENT: the content team changes `media.src`, `headline`, `subline`
- * or `durationSeconds` here — or replaces the whole rendered loop file — without
- * any code change. See docs/VERTICAL-LOOP-STORYBOARD.md for the full brief that
- * goes to the video editor, and the approval checklist that must be signed off
- * BEFORE the event.
+ * CONSTRAINTS
+ *   · 1080 × 1920, 9:16, 25 fps         · must read with NO audio
+ *   · one idea per card, 1–4 words      · seamless loop, no cut to black
+ *   · type ≥ 48px at 1080 wide          · 96px top/bottom safe area
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 export const eventScreenSpec = {
   canvas: '1080 × 1920 (9:16)',
-  frameRate: '25 fps (match venue player)',
-  loopLength: '60–75 seconds',
+  frameRate: '25 fps — confirm against the venue player',
   audio: 'None. The reel must communicate fully on mute.',
   safeArea: '96px top and bottom — venue screens are often bezel-cropped.',
   minimumType: '48px at 1080 wide for any word that must be read.',
   colourNote:
-    'Deep navy field, white type, single warm accent rule. Venue screens run bright — avoid pure black and avoid fine hairlines under 3px.',
+    'Deep navy field, white type, one warm accent rule. Venue screens run bright — avoid pure black and hairlines under 3px.',
   deliverables: [
     'Master: 1080×1920 H.264 MP4, ~12 Mbps, seamless loop point',
-    'Backup: same reel as a 30 s cut, in case the venue player stutters',
+    'Backup: a 30 s cut, in case the venue player stutters',
     'Stills: each title card exported as a 1080×1920 JPEG fallback',
   ],
 } as const;
@@ -43,112 +39,109 @@ export const eventScreenSlots: EventScreenSlot[] = [
     order: 1,
     category: 'branding',
     headline: 'Yashoda Hospitals',
-    subline: 'Somajiguda',
+    subline: 'Somajiguda · Pulmonology',
     durationSeconds: 6,
     media: {
       type: 'title-card',
       alt: 'Yashoda Hospitals, Somajiguda — opening brand card',
       brief:
-        'Title card. Official logo centred on deep navy, warm accent rule beneath. Hold still, no motion except a slow 2% scale on the field.',
+        'Title card. Official logo centred on deep navy, warm accent rule beneath. Hold still; no motion except a slow 2% scale on the field.',
       status: 'placeholder',
     },
-    direction: 'Fade up from navy over 12 frames. Logo settles. Absolute stillness — this is the anchor frame.',
+    direction: 'Fade up from navy over 12 frames. Logo settles. Absolute stillness — the anchor frame.',
   },
   {
-    id: 'pulmonology',
+    id: 'masterclass',
     order: 2,
-    category: 'pulmonology',
-    headline: 'Pulmonology',
-    subline: 'Advanced respiratory medicine',
+    category: 'pft',
+    headline: 'Master Class in PFT',
+    subline: '20 September 2026',
+    durationSeconds: 7,
+    media: {
+      type: 'title-card',
+      alt: 'Pulmo Mentor Master Class in PFT title card',
+      brief: 'Typographic card. Event name over a soft spirometry trace, very low contrast.',
+      status: 'placeholder',
+    },
+    direction: 'Headline enters on a 24px rise; the date follows 8 frames later. This is the only card with a date.',
+  },
+  {
+    id: 'pulmonary-function',
+    order: 3,
+    category: 'pft',
+    headline: 'Pulmonary Function Testing',
+    subline: 'Spirometry · Lung volumes · Diffusion',
     durationSeconds: 8,
     media: {
       type: 'video',
-      alt: 'Department of Pulmonology at Somajiguda',
+      alt: 'Pulmonary function testing at Somajiguda',
       brief:
-        'B-roll, vertical: department corridor, consultation or diagnostic environment. Shallow depth of field, cool clinical light. No identifiable patients.',
+        'B-roll, vertical: PFT booth, patient at the mouthpiece (consented or hands-only), spirometry trace resolving on screen.',
       status: 'placeholder',
     },
-    direction: 'Slow push in. Headline enters from a 24px rise with a 6-frame stagger on the subline.',
+    direction: 'Slow push in. Let the trace draw itself on the monitor — that motion carries the card.',
   },
   {
-    id: 'ecmo',
-    order: 3,
-    category: 'ecmo',
-    headline: 'ECMO',
-    subline: 'Advanced extracorporeal support',
-    durationSeconds: 9,
-    media: {
-      type: 'video',
-      alt: 'ECMO circuit in the critical care unit',
-      brief:
-        'B-roll, vertical: ECMO console and circuit, monitor waveforms, perfusionist hands. Macro detail preferred over wide shots. No identifiable patient.',
-      status: 'placeholder',
-    },
-    direction: 'Hard-ish cut on a beat. Hold the circuit detail. Type sits lower third, warm accent rule above it.',
-  },
-  {
-    id: 'interventions',
+    id: 'cpet-bodybox',
     order: 4,
-    category: 'interventions',
-    headline: 'Advanced Pulmonary Interventions',
-    subline: 'Diagnosis and therapy through the airway',
-    durationSeconds: 9,
+    category: 'diagnostics',
+    headline: 'CPET · Body Box',
+    subline: 'Advanced respiratory diagnostics',
+    durationSeconds: 8,
     media: {
       type: 'video',
-      alt: 'Interventional pulmonology suite',
+      alt: 'Cardiopulmonary exercise testing and body plethysmography',
       brief:
-        'B-roll, vertical: bronchoscopy tower, scope in hand, monitor stack. Screen content must be non-identifiable or cleared for use.',
+        'B-roll, vertical: CPET cycle ergometer and mask, body plethysmography cabin. Equipment detail over wide shots.',
       status: 'placeholder',
     },
-    direction:
-      'Headline is the longest in the reel — set it two lines, 56px, tight tracking. Give it the full 9 seconds.',
+    direction: 'Two beats — CPET, then the body box — 4 seconds each, cut on the subline rhythm.',
   },
   {
-    id: 'lung-transplant',
+    id: 'intervention',
     order: 5,
-    category: 'lung-transplant',
-    headline: 'Lung Transplantation',
-    subline: 'Multidisciplinary care for advanced lung disease',
-    durationSeconds: 9,
+    category: 'intervention',
+    headline: 'Interventional Pulmonology',
+    subline: 'Bronchoscopy · EBUS · Cryobiopsy',
+    durationSeconds: 8,
     media: {
       type: 'video',
-      alt: 'Multidisciplinary lung transplant team',
+      alt: 'Interventional pulmonology suite at Somajiguda',
       brief:
-        'B-roll, vertical: theatre corridor, team in discussion, transplant coordination. Releases required for any identifiable person.',
+        'B-roll, vertical: bronchoscopy tower, scope in hand, monitor stack. Screen content non-identifiable or cleared.',
+      status: 'placeholder',
+    },
+    direction: 'Hard-ish cut on a beat. Hold the scope detail. Type lower third, accent rule above.',
+  },
+  {
+    id: 'advanced-care',
+    order: 6,
+    category: 'advanced-care',
+    headline: 'ECMO · Lung Transplantation',
+    subline: 'Advanced respiratory support',
+    durationSeconds: 8,
+    media: {
+      type: 'video',
+      alt: 'ECMO and lung transplantation care',
+      brief:
+        'B-roll, vertical: ECMO console and circuit, theatre corridor, multidisciplinary team. Releases required for identifiable people.',
       status: 'placeholder',
     },
     direction: 'Warmest grade of the reel. Slight lift in exposure. Let one human moment land here.',
   },
   {
-    id: 'diagnostics',
-    order: 6,
-    category: 'pulmonology',
-    headline: 'Advanced Diagnostics',
-    subline: 'Pulmonary function · Imaging · Tissue diagnosis',
-    durationSeconds: 8,
-    media: {
-      type: 'video',
-      alt: 'Pulmonary function testing and diagnostic imaging',
-      brief:
-        'B-roll, vertical: PFT booth, spirometry trace on screen, CT reading. Screens must show non-identifiable or cleared studies.',
-      status: 'placeholder',
-    },
-    direction: 'Three quick beats matched to the three words in the subline. Crossfades, 10 frames each.',
-  },
-  {
-    id: 'values',
+    id: 'expertise',
     order: 7,
-    category: 'branding',
-    headline: 'Expertise · Innovation · Care',
-    durationSeconds: 8,
+    category: 'pulmonology',
+    headline: 'Expertise · Diagnosis · Care',
+    durationSeconds: 7,
     media: {
       type: 'title-card',
-      alt: 'Expertise, Innovation, Care',
-      brief:
-        'Typographic card on deep navy. Three words, stacked, each entering on its own beat. No imagery.',
+      alt: 'Expertise, Diagnosis, Care',
+      brief: 'Typographic card on deep navy. Three words, stacked, each on its own beat. No imagery.',
       status: 'placeholder',
     },
-    direction: 'Words stack in sequence, 14 frames apart. Hold all three together for the final 2 seconds.',
+    direction: 'Words stack 14 frames apart. Hold all three together for the final 2 seconds.',
   },
   {
     id: 'close-brand',
@@ -156,16 +149,15 @@ export const eventScreenSlots: EventScreenSlot[] = [
     category: 'branding',
     headline: 'Yashoda Hospitals',
     subline: 'Somajiguda · Department of Pulmonology',
-    durationSeconds: 7,
+    durationSeconds: 6,
     media: {
       type: 'title-card',
       alt: 'Yashoda Hospitals, Somajiguda — closing brand card',
-      brief:
-        'Closing lockup, identical construction to the opening card so the loop point is invisible.',
+      brief: 'Closing lockup, identical construction to the opening card so the loop point is invisible.',
       status: 'placeholder',
     },
     direction:
-      'LOOP POINT. Match the opening card exactly — same scale, same position, same grade — and cross-dissolve into slot 1 over 12 frames.',
+      'LOOP POINT. Match card 01 exactly — same scale, position and grade — and cross-dissolve into it over 12 frames.',
   },
 ];
 

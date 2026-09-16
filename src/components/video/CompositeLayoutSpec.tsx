@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { cn } from '@/lib/cn';
-import { site } from '@/data/site';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -108,7 +107,7 @@ function CompositeFrame({ annotated }: { annotated: boolean }) {
 
       {/* Persistent programme mark, burned into the master. */}
       <p className="absolute left-[2.5%] top-[4%] text-[length:1cqw] font-semibold uppercase tracking-[0.16em] text-white/45">
-        {site.eventShort}
+        Pulmo Mentor · PFT
       </p>
 
       {annotated && <Guides />}

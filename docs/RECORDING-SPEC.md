@@ -1,4 +1,4 @@
-# Recording specification — Pulmo Mentor BFD
+# Recording specification — Pulmo Mentor Master Class in PFT
 
 For the video production team. A rendered, to-scale version of this document
 lives at **`/recording-spec`** on the site — open it on a phone and read the
@@ -46,7 +46,7 @@ against a slide transition later in the talk to prove there is no drift.
 
 ```
 ┌──────────────────────────────────────────────┐
-│ PULMO MENTOR BFD                             │
+│ PULMO MENTOR · PFT                           │
 │                                              │
 │              PRESENTATION                    │
 │              (full frame)                    │
@@ -69,7 +69,7 @@ against a slide transition later in the talk to prove there is no drift.
 | Title-safe | 5% margin on all sides |
 | Head / tail | Trim to the first and last spoken word |
 | Captions | WebVTT sidecar, reviewed for clinical terminology |
-| Programme mark | "PULMO MENTOR BFD" burned in, upper left, subtle |
+| Programme mark | "PULMO MENTOR · PFT" burned in, upper left, subtle |
 
 **When the speaker demonstrates software or a scan on screen**, hide the inset
 for that passage rather than shrinking the presentation.
@@ -111,10 +111,9 @@ The site can composite them at playback time. Deliver both files and set:
 
 ```ts
 video: {
-  provider: 'file',
-  url: '/media/session-slides.mp4',      // slide feed — the timing and audio master
+  videoUrl: '/media/session-slides.mp4',      // slide feed — timing and audio master
   speakerUrl: '/media/session-speaker.mp4',
-  layout: 'composite-ppt-speaker',
+  layout: 'presentation-and-speaker',
 }
 ```
 
@@ -130,8 +129,8 @@ download, no drift, and it plays identically everywhere.
 ## Handing over a finished master
 
 1. Upload the master (YouTube, Vimeo or the hospital's own hosting).
-2. Add one record to `src/data/talks.ts` — see `docs/CONTENT-GUIDE.md`.
+2. Add one record to `src/data/sessions.ts` — see `docs/CONTENT-GUIDE.md`.
 3. Set `status: 'approved'` once the speaker has cleared the description.
 
-Everything else — the card, the thumbnail, the session grouping, the filters,
-the related-talks rail, the sitemap — is produced from that one record.
+Everything else — the card, the branded thumbnail, the session grouping and the
+modal player — is produced from that one record.

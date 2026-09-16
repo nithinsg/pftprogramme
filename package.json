@@ -1,9 +1,9 @@
 {
-  "name": "pulmo-mentor-bfd",
+  "name": "pulmo-mentor-pft",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Pulmo Mentor BFD Workshop — digital experience for Yashoda Hospitals, Somajiguda Pulmonology",
+  "description": "Pulmo Mentor Master Class in PFT — digital experience for Yashoda Hospitals, Somajiguda Pulmonology",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

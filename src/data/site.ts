@@ -1,9 +1,9 @@
 /**
- * Brand, navigation and footer content.
+ * Brand, event and navigation.
  *
  * ⚠️ BRAND ASSETS: `logo.src` is intentionally empty. Drop the official Yashoda
  * Hospitals logo into /public/media/ and point `logo.src` at it. Until then the
- * header renders a neutral typographic lockup — no invented mark is used.
+ * header renders a neutral typographic lockup — no mark is invented.
  */
 
 export const site = {
@@ -12,64 +12,65 @@ export const site = {
   city: 'Hyderabad',
   department: 'Department of Pulmonology',
   departmentShort: 'Pulmonology',
-  event: 'Pulmo Mentor BFD Workshop',
-  eventShort: 'Pulmo Mentor BFD',
-  tagline: 'Knowledge. Expertise. Advanced Pulmonary Care.',
-  /**
-   * "BFD" is carried through exactly as supplied by the organisers. If there is
-   * an official expansion, add it here and it will surface in the hero subtitle.
-   */
-  eventExpansion: '' as string,
   logo: {
     /** e.g. '/media/yashoda-logo.svg' once the official asset is supplied. */
     src: '' as string,
     alt: 'Yashoda Hospitals',
   },
   /**
-   * Contact details are deliberately empty. Do not invent phone numbers, email
-   * addresses or URLs — fill these in only from officially supplied details.
+   * Contact details are deliberately empty. Fill in only from officially
+   * supplied details — nothing is invented here.
    */
   contact: {
     website: '' as string,
     phone: '' as string,
     email: '' as string,
-    address: 'Somajiguda, Hyderabad, Telangana',
   },
 } as const;
 
+/**
+ * Event facts, exactly as given in the official Yashoda listing.
+ * Nothing here is inferred or embellished.
+ */
+export const event = {
+  name: 'Pulmo Mentor Master Class in PFT',
+  nameLines: ['Pulmo Mentor', 'Master Class in PFT'] as const,
+  shortName: 'Master Class in PFT',
+  date: '20 September 2026',
+  dateISO: '2026-09-20',
+  time: '9:00 AM – 5:00 PM',
+  venue: 'Yashoda Hospitals, Somajiguda, Hyderabad',
+  venueShort: 'Yashoda Hospitals, Somajiguda',
+  tagline: 'Revisit the science. Continue the learning.',
+} as const;
+
+/** Anchor navigation — this is a single page, so every link is an in-page jump. */
 export interface NavItem {
   label: string;
-  href: string;
-  /** Section id on the home page, used when the route is the home page itself. */
-  hash?: string;
+  /** Section id on the landing page. */
+  anchor: string;
 }
 
 export const primaryNav: NavItem[] = [
-  { label: 'Pulmonology', href: '/about' },
-  { label: 'Capabilities', href: '/capabilities' },
-  { label: 'ECMO', href: '/ecmo' },
-  { label: 'Interventions', href: '/interventions' },
-  { label: 'Lung Transplant', href: '/lung-transplant' },
-  { label: 'Recorded Talks', href: '/recordings' },
+  { label: 'About the Workshop', anchor: 'workshop' },
+  { label: 'Dr. Viswesvaran', anchor: 'course-director' },
+  { label: 'Our Expertise', anchor: 'capabilities' },
+  { label: 'Videos', anchor: 'videos' },
+  { label: 'Recorded Sessions', anchor: 'recorded-sessions' },
 ];
 
-export const footerNav: NavItem[] = [
-  { label: 'Pulmonology at Somajiguda', href: '/about' },
-  { label: 'Capabilities', href: '/capabilities' },
-  { label: 'ECMO', href: '/ecmo' },
-  { label: 'Advanced Interventions', href: '/interventions' },
-  { label: 'Lung Transplant', href: '/lung-transplant' },
-  { label: 'Recorded Talks', href: '/recordings' },
-  { label: 'Faculty', href: '/doctors' },
-];
-
-/** The single CTA repeated across the site. Change it here, it changes everywhere. */
 export const primaryCta = {
-  label: 'View Recorded Talks',
-  href: '/recordings',
+  label: 'Watch Recorded Sessions',
+  shortLabel: 'Watch Sessions',
+  anchor: 'recorded-sessions',
 } as const;
 
-export const secondaryCta = {
-  label: 'Explore Pulmonology',
-  href: '/capabilities',
-} as const;
+/**
+ * Footer links. External hospital URLs are left empty until officially
+ * supplied — a link is only rendered once `href` is filled in.
+ */
+export const footerLinks: Array<{ label: string; href: string }> = [
+  { label: 'Yashoda Hospitals', href: '' },
+  { label: 'Pulmonology', href: '' },
+  { label: 'Dr. B. Viswesvaran', href: '' },
+];

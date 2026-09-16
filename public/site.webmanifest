@@ -1,7 +1,7 @@
 {
-  "name": "Pulmo Mentor BFD | Yashoda Hospitals – Somajiguda",
-  "short_name": "Pulmo Mentor BFD",
-  "description": "Recorded sessions from the Pulmo Mentor BFD Workshop and the advanced pulmonary capabilities of Yashoda Hospitals, Somajiguda.",
+  "name": "Pulmo Mentor Master Class in PFT | Yashoda Hospitals, Somajiguda",
+  "short_name": "Master Class in PFT",
+  "description": "Recorded sessions from the Pulmo Mentor Master Class in PFT and the advanced pulmonary capabilities of Yashoda Hospitals, Somajiguda.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -1,127 +1,106 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * CONTENT MODELS
+ * CONTENT MODELS — Pulmo Mentor Master Class in PFT
  * ─────────────────────────────────────────────────────────────────────────────
- * Every piece of content on this site is described by one of the types below
- * and lives in `src/data/*`. No page component hard-codes a talk, a doctor or a
- * capability — adding a new recording is a single object in `src/data/talks.ts`.
- *
- * See `docs/CONTENT-GUIDE.md` for the hand-off instructions written for the
- * medical / marketing team.
+ * All content lives in `src/data/*`. No component hard-codes a session, a
+ * credential or a capability, so the team can add the real recordings later
+ * without touching the UI.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 /**
- * Governance flag carried by every content item.
+ * Governance flag on every content record.
  *
- * - `approved`    — signed off by the medical/marketing team. Renders clean.
- * - `placeholder` — sample scaffolding shipped with the build. Renders with a
- *                   visible marker while VITE_SHOW_PLACEHOLDERS is on.
- * - `awaiting-approval` — real content drafted but not yet cleared for publication.
+ * - `verified`    — taken from an official Yashoda source or supplied and
+ *                   approved by the hospital. Renders clean.
+ * - `placeholder` — scaffolding shipped with the build, awaiting real content.
  *
- * Nothing on this site states a clinical outcome, statistic or credential that
- * is not marked `approved` by the hospital.
+ * `VITE_SHOW_PLACEHOLDERS` decides whether placeholders render with a visible
+ * marker (review mode) or do not render at all (go-live).
  */
-export type ContentStatus = 'approved' | 'placeholder' | 'awaiting-approval';
+export type ContentStatus = 'verified' | 'placeholder';
 
-/** An image/video asset slot the content team fills in. */
+/** An image slot the content team fills in with an approved Yashoda asset. */
 export interface MediaSlot {
   /** Path under /public, or an absolute URL from the hospital's CDN. */
   src?: string;
-  /** Required whenever `src` is set — used for alt text and accessibility. */
+  /** Required whenever `src` is set. */
   alt: string;
-  /** Short brief describing the shot the production team should supply. */
+  /** Brief describing the shot to supply. Shown on screen in review mode. */
   brief?: string;
   status: ContentStatus;
 }
 
-export type VideoProvider = 'youtube' | 'vimeo' | 'file' | 'pending';
-
 /**
  * A playable video.
  *
- * The workshop deliverable (see `docs/RECORDING-SPEC.md`) is a single COMPOSITE
- * master: presentation feed full-frame with the speaker keyed in as an inset.
- * That is the `composite` case and it is what `provider` + `id`/`url` describe.
- *
- * `speakerUrl` exists for the fallback case where post-production hands over the
- * two feeds separately. When it is present the player composites them live —
- * slide feed full-frame, speaker inset, playback clock-locked to the slide feed.
+ * ⚠️ NO YOUTUBE ID IS EVER GUESSED. When the official Yashoda video cannot be
+ * identified with certainty, `youtubeId` stays as the placeholder token and the
+ * player renders a labelled empty state instead of embedding something wrong.
  */
+export const YOUTUBE_ID_PLACEHOLDER = '[INSERT OFFICIAL YASHODA VIDEO ID]';
+
 export interface VideoSource {
-  provider: VideoProvider;
-  /** YouTube / Vimeo id. Used when provider is `youtube` or `vimeo`. */
-  id?: string;
-  /** Direct MP4 or HLS URL. Used when provider is `file`. */
-  url?: string;
-  /** Second feed — speaker camera only. Triggers live picture-in-picture. */
-  speakerUrl?: string;
+  /** Official Yashoda YouTube id, or YOUTUBE_ID_PLACEHOLDER. */
+  youtubeId?: string;
+  /** Self-hosted MP4/HLS, used instead of youtubeId when the file is hosted. */
+  videoUrl?: string;
   /** Poster frame. Falls back to the generated branded thumbnail. */
-  poster?: string;
-  /** WebVTT captions. Supplying this enables the captions track (§26). */
+  thumbnail?: string;
+  /** WebVTT captions. Supplying this enables the captions track. */
   captionsUrl?: string;
-  aspect?: '16:9' | '9:16';
-  /** Presentation layout of the master file, for the on-page layout badge. */
-  layout?: 'composite-ppt-speaker' | 'speaker-only' | 'slides-only';
+  /**
+   * How the master is framed. The workshop recordings are captured from two
+   * sources and composited: presentation full-frame, speaker keyed in.
+   */
+  layout?: 'presentation-and-speaker' | 'single-camera';
+  /**
+   * Second feed — speaker camera only. Present only when post-production
+   * delivers the two sources separately; the player then composites them live.
+   */
+  speakerUrl?: string;
 }
 
-/** Filter buckets for the recordings library (§20). */
-export type CategoryId =
-  | 'workshop'
-  | 'ecmo'
-  | 'interventions'
-  | 'transplant'
-  | 'diagnostics';
+/** True when this source can actually play something. */
+export const isPlayable = (video: VideoSource): boolean =>
+  Boolean(video.videoUrl) ||
+  Boolean(video.youtubeId && video.youtubeId !== YOUTUBE_ID_PLACEHOLDER);
 
-export interface Category {
-  id: CategoryId;
-  label: string;
-  /** Short line shown when the filter is active. */
-  blurb: string;
-}
-
-/** A recorded talk in the Pulmo Mentor BFD library. */
-export interface Talk {
-  /** URL slug — /recordings/:id */
+/** A recorded session from the PFT master class. */
+export interface Session {
   id: string;
   title: string;
-  /** Use the `Dr. [Speaker Name]` placeholder form until names are confirmed. */
+  /** Use the `[ADD SPEAKER NAME]` form until the faculty list is confirmed. */
   speaker: string;
   designation: string;
   institution: string;
-  category: CategoryId;
-  /** Free-text session grouping, e.g. "Session 01 — Foundations". */
-  session: string;
-  /** Display duration, `MM:SS` or `HH:MM:SS`. */
+  /** Free-text grouping, e.g. "Foundations" or "Advanced Diagnostics". */
+  category: string;
+  /** Display duration, `MM:SS`. */
   duration: string;
   description: string;
-  /** Optional override; omit to use the generated branded thumbnail (§29). */
-  thumbnail?: string;
+  /** Optional speaker portrait; falls back to a neutral placeholder glyph. */
   speakerPhoto?: string;
   video: VideoSource;
-  /** Optional slide deck download, once cleared by the speaker. */
-  slidesUrl?: string;
-  /** Bullet takeaways shown under the player. Keep to teaching points. */
-  takeaways?: string[];
-  featured: boolean;
   status: ContentStatus;
 }
 
-/** A faculty / department profile card. */
-export interface Doctor {
+/** A curated video from an official Yashoda source. */
+export interface ShowcaseVideo {
   id: string;
-  name: string;
-  designation: string;
-  qualifications: string;
-  department: string;
-  hospital: string;
-  photo?: string;
-  focusAreas: string[];
-  bio: string;
+  /** Topic label shown above the title. */
+  category: string;
+  title: string;
+  /** Attributed doctor, exactly as the official source names them. */
+  doctor: string;
+  description: string;
+  video: VideoSource;
+  /** Official Yashoda page this video belongs to, when known. */
+  sourceUrl?: string;
   status: ContentStatus;
 }
 
-/** Icon keys resolved by `src/components/ui/Icon.tsx`. Data stays presentation-free. */
+/** Icon keys resolved by `src/components/ui/Icon.tsx` — data stays UI-free. */
 export type IconKey =
   | 'stethoscope'
   | 'activity'
@@ -129,95 +108,64 @@ export type IconKey =
   | 'heart-pulse'
   | 'wind'
   | 'microscope'
-  | 'flask'
+  | 'moon'
   | 'graduation'
-  | 'users'
   | 'shield'
   | 'monitor'
-  | 'layers';
+  | 'layers'
+  | 'gauge'
+  | 'waves'
+  | 'syringe';
 
+/** One of Dr. Viswesvaran's areas of expertise. */
+export interface ExpertiseArea {
+  id: string;
+  title: string;
+  description: string;
+  icon: IconKey;
+  status: ContentStatus;
+}
+
+/** A capability of the Somajiguda pulmonology service. */
 export interface Capability {
   id: string;
   title: string;
+  /** One short line. The grid is deliberately light on copy. */
   summary: string;
   icon: IconKey;
-  /** Optional deep link to a showcase page. */
-  href?: string;
+  /** Groups the grid into readable bands. */
+  group: 'Diagnostics' | 'Intervention' | 'Advanced Care';
   status: ContentStatus;
 }
 
-/** A named procedure or service line listed inside a showcase. */
-export interface ProcedureItem {
+/** A programme highlight from the official event listing. */
+export interface ProgrammeHighlight {
   id: string;
   title: string;
   description: string;
-  /**
-   * Procedures render only when `status` is `approved` — the brief requires that
-   * specific procedures appear only once approved content exists (§6, card 2).
-   */
-  status: ContentStatus;
-}
-
-/** A case / procedure film attached to a showcase. */
-export interface CaseVideo {
-  id: string;
-  title: string;
-  summary: string;
-  duration: string;
-  video: VideoSource;
-  /** Faculty attribution line. */
-  attribution: string;
-  /**
-   * Patient-identifiable footage must not publish until consent and
-   * institutional approval are recorded here.
-   */
-  consent: 'on-file' | 'required';
-  status: ContentStatus;
-}
-
-export type ShowcaseId = 'ecmo' | 'interventions' | 'lung-transplant';
-
-export interface Showcase {
-  id: ShowcaseId;
-  /** Route path, e.g. /ecmo */
-  href: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  /** 2–3 sentences. No outcome claims, no statistics. */
-  description: string;
-  /** Clinical highlights — capability statements only. */
-  highlights: string[];
-  procedures: ProcedureItem[];
-  media: MediaSlot;
-  caseVideos: CaseVideo[];
-  ctaLabel: string;
-  /** Faculty attribution slot for the showcase. */
-  attribution: string;
-  /** Recording library category this showcase filters into. */
-  libraryCategory: CategoryId;
+  icon: IconKey;
   status: ContentStatus;
 }
 
 /**
- * ── Event-day vertical screen (§12–§14) ──────────────────────────────────────
- * A 9:16 loop that plays silently on the venue screen. Each slot is swappable
- * by the content team without touching code — see docs/VERTICAL-LOOP-STORYBOARD.md.
+ * ── Event-day vertical screen ────────────────────────────────────────────────
+ * A silent 9:16 loop for the venue screen. Separate from the website
+ * experience — see docs/VERTICAL-LOOP-STORYBOARD.md.
  */
 export type EventScreenCategory =
   | 'branding'
-  | 'ecmo'
-  | 'interventions'
-  | 'lung-transplant'
-  | 'pulmonology';
+  | 'pulmonology'
+  | 'pft'
+  | 'diagnostics'
+  | 'intervention'
+  | 'advanced-care';
 
 export interface EventScreenSlot {
   id: string;
   order: number;
   category: EventScreenCategory;
-  /** Large on-screen type. Keep to 1–4 words — read at walking pace. */
+  /** Large on-screen type. One to four words — read at walking pace. */
   headline: string;
-  /** One short supporting line. Optional. */
   subline?: string;
   /** Seconds this slot holds on screen. */
   durationSeconds: number;

@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { talks } from './src/data/talks';
 
 /**
  * Writes sitemap.xml and robots.txt into the build output, derived from the
@@ -18,22 +17,9 @@ function seoFiles(siteUrl: string, indexable: boolean): Plugin {
       const origin = siteUrl.replace(/\/$/, '');
       const today = new Date().toISOString().slice(0, 10);
 
-      const routes = [
-        { path: '/', priority: '1.0', changefreq: 'weekly' },
-        { path: '/recordings', priority: '0.9', changefreq: 'weekly' },
-        { path: '/capabilities', priority: '0.8', changefreq: 'monthly' },
-        { path: '/ecmo', priority: '0.8', changefreq: 'monthly' },
-        { path: '/interventions', priority: '0.8', changefreq: 'monthly' },
-        { path: '/lung-transplant', priority: '0.8', changefreq: 'monthly' },
-        { path: '/about', priority: '0.7', changefreq: 'monthly' },
-        { path: '/doctors', priority: '0.7', changefreq: 'monthly' },
-        // /event-screen and /recording-spec are internal and stay out of the index.
-        ...talks.map((talk) => ({
-          path: `/recordings/${talk.id}`,
-          priority: '0.6',
-          changefreq: 'monthly',
-        })),
-      ];
+      // This is a single-page site: one public URL. /event-screen and
+      // /recording-spec are internal production documents and stay out.
+      const routes = [{ path: '/', priority: '1.0', changefreq: 'weekly' }];
 
       const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

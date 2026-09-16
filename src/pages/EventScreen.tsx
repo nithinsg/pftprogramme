@@ -20,16 +20,17 @@ import { VerticalVideoShowcase } from '@/components/event/VerticalVideoShowcase'
 const categoryLabels: Record<EventScreenCategory, string> = {
   branding: 'Branding',
   pulmonology: 'Pulmonology',
-  ecmo: 'ECMO',
-  interventions: 'Advanced Interventions',
-  'lung-transplant': 'Lung Transplant',
+  pft: 'PFT',
+  diagnostics: 'Advanced Diagnostics',
+  intervention: 'Interventional Pulmonology',
+  'advanced-care': 'ECMO & Transplantation',
 };
 
 export default function EventScreen() {
   useSeo({
     title: 'Event-Day Vertical Screen',
     description:
-      'Creative specification, storyboard and live preview for the 9:16 capability loop playing on the venue screen at the Pulmo Mentor BFD Workshop.',
+      'Creative specification, storyboard and live preview for the 9:16 capability loop playing on the venue screen at the Pulmo Mentor Master Class in PFT.',
     path: '/event-screen',
     noIndex: true,
   });
@@ -74,7 +75,7 @@ export default function EventScreen() {
             <dl className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white">
               <SpecRow label="Canvas" value={eventScreenSpec.canvas} />
               <SpecRow label="Frame rate" value={eventScreenSpec.frameRate} />
-              <SpecRow label="Loop length" value={`${totalLoopSeconds}s (target ${eventScreenSpec.loopLength})`} />
+              <SpecRow label="Loop length" value={`${totalLoopSeconds}s`} />
               <SpecRow label="Audio" value={eventScreenSpec.audio} />
               <SpecRow label="Safe area" value={eventScreenSpec.safeArea} />
               <SpecRow label="Minimum type" value={eventScreenSpec.minimumType} />

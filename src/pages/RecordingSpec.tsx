@@ -1,5 +1,5 @@
 import { Camera, Check, MonitorPlay, X } from 'lucide-react';
-import { site } from '@/data/site';
+import { event, site } from '@/data/site';
 import { useSeo } from '@/lib/seo';
 import { Section } from '@/components/ui/Section';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -18,7 +18,7 @@ export default function RecordingSpec() {
   useSeo({
     title: 'Recording Production Specification',
     description:
-      'Two-source capture and composite delivery requirements for the Pulmo Mentor BFD Workshop recordings.',
+      'Two-source capture and composite delivery requirements for the Pulmo Mentor Master Class in PFT recordings.',
     path: '/recording-spec',
     noIndex: true,
   });
@@ -29,7 +29,7 @@ export default function RecordingSpec() {
         eyebrow="Production · Internal"
         title="Recording Specification"
         lede="Two sources, captured separately, synchronised in post and delivered as one composite master — presentation full-frame, speaker keyed in. This is what the video library on this site is built to play."
-        back={{ to: '/recordings', label: 'Back to the library' }}
+        back={{ to: '/', label: 'Back to the workshop page' }}
       />
 
       {/* The two sources */}
@@ -196,8 +196,8 @@ export default function RecordingSpec() {
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button to="/recordings" variant="onDark" size="md" withArrow>
-              View the library
+            <Button to="/" variant="onDark" size="md" withArrow>
+              Back to the workshop page
             </Button>
             <Button to="/event-screen" variant="onDarkGhost" size="md">
               Event-day vertical screen
@@ -206,7 +206,7 @@ export default function RecordingSpec() {
 
           <p className="mt-10 text-meta text-ink-300/70">
             {site.hospital} <span aria-hidden="true">·</span> {site.centre}{' '}
-            <span aria-hidden="true">·</span> {site.event}
+            <span aria-hidden="true">·</span> {event.name}
           </p>
         </div>
       </Section>

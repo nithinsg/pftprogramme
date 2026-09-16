@@ -3,12 +3,13 @@ import type { MediaSlot } from '@/data/types';
 import { cn } from '@/lib/cn';
 import { config } from '@/lib/config';
 
-type Ratio = '16/9' | '4/3' | '3/2' | '1/1' | '9/16';
+type Ratio = '16/9' | '4/3' | '3/2' | '4/5' | '1/1' | '9/16';
 
 const ratioClass: Record<Ratio, string> = {
   '16/9': 'aspect-video',
   '4/3': 'aspect-[4/3]',
   '3/2': 'aspect-[3/2]',
+  '4/5': 'aspect-[4/5]',
   '1/1': 'aspect-square',
   '9/16': 'aspect-[9/16]',
 };

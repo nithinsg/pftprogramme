@@ -13,12 +13,10 @@ import { cn } from '@/lib/cn';
  * which is the behaviour the brief calls a core requirement.
  */
 export function ShareBar({
-  path = '/',
   heading = 'Share with a colleague',
-  body = 'The link opens the workshop page, with the recordings one tap away.',
+  body = 'The link opens this page, with the recorded sessions one tap away.',
   className,
 }: {
-  path?: string;
   heading?: string;
   body?: string;
   className?: string;
@@ -41,10 +39,10 @@ export function ShareBar({
 
       <div className="flex shrink-0 gap-2">
         <a
-          href={whatsappShareUrl('/')}
+          href={whatsappShareUrl()}
           target="_blank"
           rel="noreferrer noopener"
-          onClick={() => track({ name: 'share_click', channel: 'whatsapp', path })}
+          onClick={() => track({ name: 'share_click', channel: 'whatsapp' })}
           className="inline-flex h-11 items-center gap-2 rounded-pill bg-ink-900 px-5 text-sm font-semibold text-white transition-colors hover:bg-ink-800"
         >
           <MessageCircle className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
@@ -55,7 +53,7 @@ export function ShareBar({
           type="button"
           onClick={() => {
             copy(shareTarget);
-            track({ name: 'share_click', channel: 'copy-link', path });
+            track({ name: 'share_click', channel: 'copy-link' });
           }}
           className="inline-flex h-11 items-center gap-2 rounded-pill border border-line bg-white px-5 text-sm font-semibold text-ink-800 transition-colors hover:border-ink-300 hover:bg-mist-50"
         >

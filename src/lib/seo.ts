@@ -1,29 +1,26 @@
 import { useEffect } from 'react';
 import { absoluteUrl, config } from './config';
-import { site } from '@/data/site';
+import { event, site } from '@/data/site';
 
 /**
- * Per-route document head management (§31).
+ * Per-route document head management.
  *
  * The HTML shell already carries a complete static Open Graph block — crawlers
- * such as WhatsApp's do not execute JavaScript, and the shared post-event link
- * points at the landing page, so the preview is always correct. This hook keeps
- * the head in sync for in-app navigation, deep links that get re-shared, and
- * for crawlers that do render (Google).
+ * such as WhatsApp's do not execute JavaScript, and the shared link points at
+ * the landing page, so the preview is always correct. This hook keeps the head
+ * in sync for the two internal routes and for crawlers that do render.
  */
 export interface SeoInput {
   title: string;
   description: string;
   path: string;
-  /** Absolute or root-relative image path. Defaults to the branded OG card. */
   image?: string;
-  type?: 'website' | 'article' | 'video.other';
-  /** Optional JSON-LD object injected as a route-scoped script tag. */
+  type?: 'website' | 'article';
   jsonLd?: Record<string, unknown>;
   noIndex?: boolean;
 }
 
-const DEFAULT_OG_IMAGE = '/media/og-pulmo-mentor-bfd.png';
+const DEFAULT_OG_IMAGE = '/media/og-pulmo-mentor-pft.png';
 const JSON_LD_ID = 'route-json-ld';
 
 function setMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
@@ -58,7 +55,7 @@ export function useSeo({
   useEffect(() => {
     const fullTitle = title.includes(site.hospital)
       ? title
-      : `${title} | ${site.eventShort} · ${site.hospital} – ${site.centre}`;
+      : `${title} | ${site.hospital}, ${site.centre}`;
     const url = absoluteUrl(path);
     const imageUrl = image.startsWith('http') ? image : absoluteUrl(image);
 
@@ -100,10 +97,8 @@ export function useSeo({
   }, [title, description, path, image, type, jsonLd, noIndex]);
 }
 
-/** WhatsApp share URL for the post-event link (§32). */
-export const whatsappShareUrl = (path = '/'): string => {
-  const message = `Thank you for attending the ${site.event}. Access the recorded sessions here: ${absoluteUrl(path)}`;
+/** WhatsApp share URL — always points at the landing page. */
+export const whatsappShareUrl = (): string => {
+  const message = `Recorded sessions from the ${event.name}, ${event.date} at ${event.venueShort}: ${absoluteUrl('/')}`;
   return `https://wa.me/?text=${encodeURIComponent(message)}`;
 };
-
-export const siteConfigured = (): boolean => Boolean(config.siteUrl);

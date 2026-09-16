@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { track } from './analytics';
 
 /** True when the visitor has asked the OS to reduce motion (§26). */
 export function usePrefersReducedMotion(): boolean {
@@ -56,6 +57,37 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
   }, [threshold, rootMargin, once]);
 
   return [ref, visible];
+}
+
+/**
+ * Reports the first time a landing-page section is seen. One observer per
+ * section, disconnected as soon as it fires — this is how we learn whether
+ * visitors actually reach the course director and capability sections.
+ */
+export function useSectionView(section: string): React.RefObject<HTMLElement> {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            track({ name: 'section_view', section });
+            observer.disconnect();
+          }
+        }
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [section]);
+
+  return ref;
 }
 
 /** Locks body scroll while a mobile drawer or modal is open. */
